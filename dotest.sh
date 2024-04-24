@@ -105,7 +105,7 @@ then
         getuto
         echo "PORTAGE_WORKDIR_MODE=\"0750\"" >> /etc/portage/make.conf
         echo "MAKEOPTS=\"${MAKEOPTS}\"" >> /etc/portage/make.conf
-        echo "EMERGE_DEFAULT_OPTS=\"--autounmask --autounmask-continue --autounmask-backtrack=y --complete-graph --deep --usepkg --getbinpkg --backtrack=300 --usepkg-exclude dev-perl/Mozilla-CA\"" >> /etc/portage/make.conf
+        echo "EMERGE_DEFAULT_OPTS=\"--autounmask --autounmask-continue --autounmask-backtrack=y --complete-graph --deep --update --newuse --usepkg --getbinpkg --backtrack=300 --usepkg-exclude dev-perl/Mozilla-CA\"" >> /etc/portage/make.conf
         echo "PORTAGE_NICENESS=\"39\"" >> /etc/portage/make.conf
         echo "FEATURES=\"-parallel-fetch binpkg-request-signature\"" >> /etc/portage/make.conf
         [[ "${CHROOT_NAME}" != *"musl"* ]] && echo "PORTAGE_SCHEDULING_POLICY=\"idle\"" >> /etc/portage/make.conf
