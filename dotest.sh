@@ -92,33 +92,33 @@ then
         sudo -E cp -va "/usr/local/share/ca-certificates/ca.crt" "${CHROOT_NAME}/usr/local/share/ca-certificates/ca.crt"
     fi
     [[ -n "${QEMU_BINARY:-}" ]] && sudo -E cp -v "${QEMU_BINARY}" "${CHROOT_NAME}/${QEMU_BINARY}"
-    setarch "$(run_getpersonality)" -- sudo -E chroot "${CHROOT_NAME}" /bin/bash << '    EOF'
-        set -eo pipefail
-        source /etc/profile
-        type locale-gen && locale-gen
-        env-update && source /etc/profile
-        type locale-gen && eselect locale set en_US.utf8
-        env-update && source /etc/profile
-        update-ca-certificates --fresh
-        mkdir -vp /etc/portage/env
-        eselect news read
-        getuto
-        echo "PORTAGE_WORKDIR_MODE=\"0750\"" >> /etc/portage/make.conf
-        echo "MAKEOPTS=\"${MAKEOPTS}\"" >> /etc/portage/make.conf
-        echo "EMERGE_DEFAULT_OPTS=\"--autounmask --autounmask-continue --autounmask-backtrack=y --complete-graph --deep --usepkg --getbinpkg --backtrack=300 --usepkg-exclude dev-perl/Mozilla-CA\"" >> /etc/portage/make.conf
-        echo "PORTAGE_NICENESS=\"39\"" >> /etc/portage/make.conf
-        echo "FEATURES=\"-parallel-fetch binpkg-request-signature\"" >> /etc/portage/make.conf
-        [[ "${CHROOT_NAME}" != *"musl"* ]] && echo "PORTAGE_SCHEDULING_POLICY=\"idle\"" >> /etc/portage/make.conf
-        [[ "${CHROOT_NAME}" == *systemd* ]] && systemd-machine-id-setup
-        [[ -n "${QEMU_BINARY:-}" ]] && sed -E -i "s/(^FEATURES=.*)\"$/\1 -pid-sandbox -network-sandbox\"/" /etc/portage/make.conf
-        echo "TZ=\"UTC\"" >> /etc/portage/make.conf
-        mkdir -vp /etc/portage/env
-        echo -e "USE=\"test\"\nFEATURES=\"test keeptemp\"" > /etc/portage/env/test
-        touch /.ready
-        sync
-        emerge -vuDN1 --exclude sys-devel/gcc @world
-        eselect news read
-    EOF
+    setarch "$(run_getpersonality)" -- sudo -E chroot "${CHROOT_NAME}" /bin/bash <<EOF
+    set -eo pipefail
+    source /etc/profile
+    type locale-gen && locale-gen
+    env-update && source /etc/profile
+    type locale-gen && eselect locale set en_US.utf8
+    env-update && source /etc/profile
+    update-ca-certificates --fresh
+    mkdir -vp /etc/portage/env
+    eselect news read
+    getuto
+    echo "PORTAGE_WORKDIR_MODE=\"0750\"" | tee -a /etc/portage/make.conf
+    echo "MAKEOPTS=\"${MAKEOPTS}\"" | tee -a /etc/portage/make.conf
+    echo "EMERGE_DEFAULT_OPTS=\"--autounmask --autounmask-continue --autounmask-backtrack=y --complete-graph --deep --usepkg --getbinpkg --backtrack=300 --usepkg-exclude dev-perl/Mozilla-CA\"" | tee -a /etc/portage/make.conf
+    echo "PORTAGE_NICENESS=\"39\"" | tee -a /etc/portage/make.conf
+    echo "FEATURES=\"-parallel-fetch binpkg-request-signature\"" | tee -a /etc/portage/make.conf
+    [[ "${CHROOT_NAME}" != *"musl"* ]] && echo "PORTAGE_SCHEDULING_POLICY=\"idle\"" | tee -a /etc/portage/make.conf
+    [[ "${CHROOT_NAME}" == *systemd* ]] && systemd-machine-id-setup
+    [[ -n "${QEMU_BINARY:-}" ]] && sed -E -i "s/(^FEATURES=.*)\"$/\1 -pid-sandbox -network-sandbox\"/" /etc/portage/make.conf
+    echo "TZ=\"UTC\"" | tee -a /etc/portage/make.conf
+    mkdir -vp /etc/portage/env
+    echo -e "USE=\"test\"\nFEATURES=\"test keeptemp\"" > /etc/portage/env/test
+    touch /.ready
+    sync
+    emerge -vuDN1 --exclude sys-devel/gcc @world
+    eselect news read
+EOF
 fi
 
 run_domounts "${CHROOT_NAME}"
@@ -136,16 +136,16 @@ sudo -E git -C "${CHROOT_NAME}/var/db/repos/gentoo" fetch --depth=1
 sudo -E git -C "${CHROOT_NAME}/var/db/repos/gentoo" reset --merge origin/stable
 verifycommit
 setarch "$(run_getpersonality)" -- sudo -E chroot "${CHROOT_NAME}" /bin/bash <<EOF
-    set -eo pipefail
-    source /etc/profile
-    [[ ! -e /.ready ]] && echo "Setup failed to complete, please delete and rerun" && exit 1
-    eselect news read
-    rm -rf /etc/portage/package.env /etc/portage/package.accept_keywords /var/tmp/portage/*
-    [[ -z "${SKIP_UPDATES:-}" ]] && emerge -vuDN1 --exclude sys-devel/gcc @world
-    for f in ${pkglist[@]@Q} ; do echo "\${f} test" >> /etc/portage/package.env ; done
-    emerge -ev1 --keep-going ${pkglist[@]@Q} --usepkg-exclude "$(qatom -C -F "%{CATEGORY}/%{PN}" "${pkglist[@]}" | tr "\n" " ")" --autounmask-only
-    echo emerge -v1 --keep-going ${pkglist[@]@Q} --usepkg-exclude \""$(qatom -C -F "%{CATEGORY}/%{PN}" "${pkglist[@]}" | tr "\n" " ")"\"
-    emerge -v1 --keep-going ${pkglist[@]@Q} --usepkg-exclude "$(qatom -C -F "%{CATEGORY}/%{PN}" "${pkglist[@]}" | tr "\n" " ")"
+set -eo pipefail
+source /etc/profile
+[[ ! -e /.ready ]] && echo "Setup failed to complete, please delete and rerun" && exit 1
+eselect news read
+rm -rf /etc/portage/package.env /etc/portage/package.accept_keywords /var/tmp/portage/*
+[[ -z "${SKIP_UPDATES:-}" ]] && emerge -vuDN1 --exclude sys-devel/gcc @world
+for f in ${pkglist[@]@Q} ; do echo "\${f} test" >> /etc/portage/package.env ; done
+emerge -ev1 --keep-going ${pkglist[@]@Q} --usepkg-exclude "$(qatom -C -F "%{CATEGORY}/%{PN}" "${pkglist[@]}" | tr "\n" " ")" --autounmask-only
+echo emerge -v1 --keep-going ${pkglist[@]@Q} --usepkg-exclude \""$(qatom -C -F "%{CATEGORY}/%{PN}" "${pkglist[@]}" | tr "\n" " ")"\"
+emerge -v1 --keep-going ${pkglist[@]@Q} --usepkg-exclude "$(qatom -C -F "%{CATEGORY}/%{PN}" "${pkglist[@]}" | tr "\n" " ")"
 EOF
 
 run_dounmounts "${CHROOT_NAME}"
