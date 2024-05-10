@@ -82,7 +82,7 @@ then
     sudo -E cp -va "/etc/security/limits.conf" "${CHROOT_NAME}/etc/security/limits.conf"
     [[ -d "../releng" ]] || git -C .. clone "https://github.com/gentoo/releng"
     git -C "../releng" pull --ff-only
-    sudo -E rsync -vhrltD --chown=root:root --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r --progress "../releng/releases/portage/stages/" "${CHROOT_NAME}/etc/portage/"
+    sudo -E rsync --verbose --human-readable --recursive --links --times -D --chown=root:root --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r --progress "../releng/releases/portage/stages/" "${CHROOT_NAME}/etc/portage/"
     echo -e 'C.UTF8 UTF-8\nen_US.UTF-8 UTF-8' | sudo -E tee "${CHROOT_NAME}/etc/locale.gen"
     sudo -E git -C "${CHROOT_NAME}/var/db/repos" clone --depth=1 "https://github.com/gentoo-mirror/gentoo"
     verifycommit
@@ -131,7 +131,7 @@ then
 fi
 
 [[ -e "../testreqs.package.use" ]] && sudo -E cp -vf "../testreqs.package.use" "${CHROOT_NAME}/etc/portage/package.use/testreqs"
-[[ -d "../distfiles" ]] && sudo -E rsync -vhrltD --chown=portage:portage --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r --progress --update "../distfiles/" "${CHROOT_NAME}/var/cache/distfiles/"
+[[ -d "../distfiles" ]] && sudo -E rsync --verbose --human-readable --recursive --links --times -D --chown=portage:portage --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r --progress --update "../distfiles/" "${CHROOT_NAME}/var/cache/distfiles/"
 sudo -E git -C "${CHROOT_NAME}/var/db/repos/gentoo" fetch --depth=1
 sudo -E git -C "${CHROOT_NAME}/var/db/repos/gentoo" reset --merge origin/stable
 verifycommit
