@@ -150,3 +150,18 @@ function run_getpersonality()
         *)      uname -m;;
     esac
 }
+
+function run_getdefaultflavor()
+{
+    case "${1:-${ARCH}}" in
+        amd64|alpha|arm64|ia64|loong|m68k|ppc|ppc64)    echo "${1:-${ARCH}}-openrc";;
+        arm)    echo "armv7a_hardfp-openrc";;
+        hppa)   echo "hppa2.0-openrc";;
+        mips)   echo "mipsel3_n64-openrc";;
+        riscv)  echo "rv64_lp64d-openrc";;
+        s390)   echo "s390x-openrc";;
+        sparc)  echo "sparc64-openrc";;
+        x86)    echo "i686-openrc";;
+        *)  eerror "Unknown arch - manually specify DEFAULT_FLAVOR";;
+    esac
+}

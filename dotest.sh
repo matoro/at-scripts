@@ -9,9 +9,10 @@ sudo -E id
 [[ -e "settings.sh" ]] && source "settings.sh"
 source "../functions.sh"
 
-FLAVOR="${2:-"${DEFAULT_FLAVOR}"}"
 ARCH="${ARCH:-"$(portageq envvar ARCH)"}"
 RELARCH="${RELARCH:-"${ARCH}"}"
+DEFAULT_FLAVOR="${DEFAULT_FLAVOR:-"$(run_getdefaultflavor "${ARCH}")"}"
+FLAVOR="${2:-"${DEFAULT_FLAVOR}"}"
 MAKEOPTS="${MAKEOPTS:-"$(portageq envvar MAKEOPTS)"}"
 [[ "$(stat -f -c %T "${PWD}")" == "nfs" ]] && export NFS_WORKAROUND="${NFS_WORKAROUND:-1}" || export NFS_WORKAROUND="${NFS_WORKAROUND:-0}"
 

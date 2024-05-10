@@ -4,8 +4,7 @@ $ cd at-scripts
 $ mkdir "$(hostname -s)"
 $ cd "$(hostname -s)"
 $
-$ # Put all settings you wish to keep permanently in here.
-$ # Change appropriately on other arches.
+$ # Put all settings you wish to keep permanently in here.  E.x.:
 $ echo 'DEFAULT_FLAVOR="amd64-openrc"' >> settings.sh
 $
 $ # To test package list from bug
