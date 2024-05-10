@@ -56,6 +56,13 @@ function run_urldecode() {
     perl -MURI::Escape -e 'print uri_unescape shift' "${1}" && echo
 }
 
+function run_defsettings()
+{
+    ARCH="${ARCH:-"$(portageq envvar ARCH)"}"
+    RELARCH="${RELARCH:-"${ARCH}"}"
+    DEFAULT_FLAVOR="${DEFAULT_FLAVOR:-"$(run_getdefaultflavor "${ARCH}")"}"
+}
+
 function run_dokw() 
 { 
     [[ -z "${1}" ]] && return
@@ -73,7 +80,7 @@ function run_dokw()
  
 function run_testlogs() 
 { 
-    [[ -f "settings.sh" ]] && source "settings.sh"
+    [[ -f "settings.sh" ]] && source "settings.sh" || run_defsettings
     run_domounts "latest-stage3-${1:-${DEFAULT_FLAVOR}}"
     awk '/>>> Test phase/{f=1} /(>>> Completed testing|disabled because of RESTRICT=test)/{f=0;print} f' latest-stage3-${1:-${DEFAULT_FLAVOR}}/var/tmp/portage/*/*/temp/build.log
     run_dounmounts "latest-stage3-${1:-${DEFAULT_FLAVOR}}"
@@ -81,7 +88,7 @@ function run_testlogs()
 
 function run_addca()
 {
-    [[ -f "settings.sh" ]] && source "settings.sh"
+    [[ -f "settings.sh" ]] && source "settings.sh" || run_defsettings
     run_domounts "latest-stage3-${1:-${DEFAULT_FLAVOR}}"
     [[ ! -d "latest-stage3-${1:-${DEFAULT_FLAVOR}}/usr/local" ]] && return
     sudo -E mkdir -vp "latest-stage3-${1:-${DEFAULT_FLAVOR}}/usr/local/share/ca-certificates"
@@ -102,7 +109,7 @@ function run_gendebug()
 
 function run_addspace()
 {
-    [[ -f "settings.sh" ]] && source "settings.sh"
+    [[ -f "settings.sh" ]] && source "settings.sh" || run_defsettings
     [[ -f "$(readlink -f "latest-stage3-${1:-${DEFAULT_FLAVOR}}").img" ]] || return
     run_dounmounts "latest-stage3-${1:-${DEFAULT_FLAVOR}}"
     dd status=progress if=/dev/zero of="$(readlink -f "latest-stage3-${1:-${DEFAULT_FLAVOR}}").img" bs=100M count="$(( 10 * "${2%%G}" ))" oflag=append,dsync conv=notrunc
@@ -112,7 +119,7 @@ function run_addspace()
 
 function run_remanifest()
 {
-    [[ -f "settings.sh" ]] && source "settings.sh"
+    [[ -f "settings.sh" ]] && source "settings.sh" || run_defsettings
     run_domounts "latest-stage3-${1:-${DEFAULT_FLAVOR}}"
     (sudo -E git -C "latest-stage3-${1:-${DEFAULT_FLAVOR}}/var/db/repos/gentoo" ls-files --others --exclude-standard && sudo -E git -C "latest-stage3-${1:-${DEFAULT_FLAVOR}}/var/db/repos/gentoo" diff --name-only) | sort -u | grep -E ".*\.ebuild$" | while read line
     do
@@ -123,7 +130,7 @@ function run_remanifest()
 
 function run_resetgit()
 {
-    [[ -f "settings.sh" ]] && source "settings.sh"
+    [[ -f "settings.sh" ]] && source "settings.sh" || run_defsettings
     run_domounts "latest-stage3-${1:-${DEFAULT_FLAVOR}}"
     sudo -E git -C "latest-stage3-${1:-${DEFAULT_FLAVOR}}/var/db/repos/gentoo" reset --hard
     sudo -E git -C "latest-stage3-${1:-${DEFAULT_FLAVOR}}/var/db/repos/gentoo" clean -fdx
