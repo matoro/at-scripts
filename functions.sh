@@ -150,7 +150,9 @@ function run_killprocs()
 
 function run_getpersonality()
 {
-    case "${1:-${ARCH}}" in
+    [[ -z "${ARCH}" ]] && unset ARCH
+    ARCH="${1:-${ARCH:-$(portageq envvar ARCH)}}"
+    case "${ARCH}" in
         arm)    echo "armv7l";;
         ppc)    echo "ppc32";;
         x86)    echo "i686";;
@@ -160,8 +162,9 @@ function run_getpersonality()
 
 function run_getdefaultflavor()
 {
-    case "${1:-${ARCH}}" in
-        amd64|alpha|arm64|ia64|loong|m68k|ppc|ppc64)    echo "${1:-${ARCH}}-openrc";;
+    [[ -z "${ARCH}" ]] && unset ARCH
+    ARCH="${1:-${ARCH:-$(portageq envvar ARCH)}}"
+    case "${ARCH}" in
         arm)    echo "armv7a_hardfp-openrc";;
         hppa)   echo "hppa2.0-openrc";;
         mips)   echo "mipsel3_n64-openrc";;
@@ -169,6 +172,6 @@ function run_getdefaultflavor()
         s390)   echo "s390x-openrc";;
         sparc)  echo "sparc64-openrc";;
         x86)    echo "i686-openrc";;
-        *)  eerror "Unknown arch - manually specify DEFAULT_FLAVOR";;
+        *)    echo "${ARCH}-openrc";;
     esac
 }
