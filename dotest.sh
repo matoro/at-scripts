@@ -91,6 +91,7 @@ then
         sudo -E cp -va "/usr/local/share/ca-certificates/ca.crt" "${CHROOT_NAME}/usr/local/share/ca-certificates/ca.crt"
     fi
     [[ -n "${QEMU_BINARY:-}" ]] && sudo -E cp -v "${QEMU_BINARY}" "${CHROOT_NAME}/${QEMU_BINARY}"
+    [[ -z "${NOBINPKG:-}" ]] && BINPKG_ARG="--getbinpkg=y" || BINPKG_ARG="--getbinpkg=n"
     setarch "$(run_getpersonality)" -- sudo -E chroot "${CHROOT_NAME}" /bin/bash <<EOF
     set -eo pipefail
     source /etc/profile
@@ -104,7 +105,7 @@ then
     getuto
     echo "PORTAGE_WORKDIR_MODE=\"0750\"" | tee -a /etc/portage/make.conf
     echo "MAKEOPTS=\"${MAKEOPTS}\"" | tee -a /etc/portage/make.conf
-    echo "EMERGE_DEFAULT_OPTS=\"--autounmask --autounmask-continue --autounmask-backtrack=y --complete-graph --deep --usepkg --getbinpkg --backtrack=300 --usepkg-exclude dev-perl/Mozilla-CA --usepkg-exclude perl-core/Math-BigInt\"" | tee -a /etc/portage/make.conf
+    echo "EMERGE_DEFAULT_OPTS=\"--autounmask --autounmask-continue --autounmask-backtrack=y --complete-graph --deep --usepkg ${BINPKG_ARG} --backtrack=300 --usepkg-exclude dev-perl/Mozilla-CA --usepkg-exclude perl-core/Math-BigInt\"" | tee -a /etc/portage/make.conf
     echo "PORTAGE_NICENESS=\"18\"" | tee -a /etc/portage/make.conf
     echo "FEATURES=\"-parallel-fetch binpkg-request-signature\"" | tee -a /etc/portage/make.conf
     [[ "${CHROOT_NAME}" != *"musl"* ]] && echo "PORTAGE_SCHEDULING_POLICY=\"idle\"" | tee -a /etc/portage/make.conf
