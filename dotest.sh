@@ -75,7 +75,7 @@ then
 fi
 if [[ ! -d "${CHROOT_NAME}" ]] || [[ "$(find "${CHROOT_NAME}" -mindepth 1 -maxdepth 1 | wc -l)" == "1" ]] || [[ "$(find "${CHROOT_NAME}" -mindepth 1 -maxdepth 1 | wc -l)" == "0" ]]
 then
-    sudo -E tar -C "${CHROOT_NAME}" -x -v -J -f "$(basename "${TARBALL}")" --xattrs-include='*.*' --numeric-owner
+    sudo -E tar -C "${CHROOT_NAME}" -x -v -J -f "${OVERRIDE_TARBALL:-$(basename "${TARBALL}")}" --xattrs-include='*.*' --numeric-owner
     run_domounts "${CHROOT_NAME}"
     sudo -E cp -vaL "/etc/resolv.conf" "${CHROOT_NAME}/etc/resolv.conf"
     sudo -E cp -va "/etc/security/limits.conf" "${CHROOT_NAME}/etc/security/limits.conf"
