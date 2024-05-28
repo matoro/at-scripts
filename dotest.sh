@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
+[[ -e "/lib/gentoo/functions.sh" ]] && source "/lib/gentoo/functions.sh" || alias eerror="echo"
+[[ "$(basename "$(realpath .)")" != "$(hostname -s)" ]] && eerror "Must run from inside directory named $(hostname -s)"
+[[ -e "settings.sh" ]] && source "settings.sh"
+source "../functions.sh"
+
 set -euo pipefail
 
 sudo -E id
-
-[[ -e "/lib/gentoo/functions.sh" ]] && source "/lib/gentoo/functions.sh" || alias eerror="echo"
-[[ "$(basename "$(realpath .)")" != "$(hostname -s)" ]] && set +u && eerror "Must run from inside directory named $(hostname -s)"
-[[ -e "settings.sh" ]] && source "settings.sh"
-source "../functions.sh"
 
 run_defsettings
 FLAVOR="${2:-"${DEFAULT_FLAVOR}"}"
