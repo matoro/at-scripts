@@ -121,6 +121,7 @@ function run_addspace()
 
 function run_remanifest()
 {
+    run_defsettings
     run_domounts "latest-stage3-${1:-${DEFAULT_FLAVOR}}"
     (sudo -E git -C "latest-stage3-${1:-${DEFAULT_FLAVOR}}/var/db/repos/gentoo" ls-files --others --exclude-standard && sudo -E git -C "latest-stage3-${1:-${DEFAULT_FLAVOR}}/var/db/repos/gentoo" diff --name-only) | sort -u | grep -E ".*\.ebuild$" | while read line
     do
