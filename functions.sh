@@ -106,7 +106,7 @@ function run_notest()
 
 function run_gendebug()
 {
-    NOSRC=1 FEATURES="-test installsources nostrip" USE="-test debug" CFLAGS="-O0 -ggdb3 -pipe" CXXFLAGS="${CFLAGS}" FCFLAGS="${CFLAGS}" FFLAGS="${CFLAGS}" "${@}"
+    SKIP_UPDATES=1 NOSRC=1 FEATURES="-test installsources nostrip" USE="-test debug" CFLAGS="-O0 -ggdb3 -pipe" CXXFLAGS="${CFLAGS}" FCFLAGS="${CFLAGS}" FFLAGS="${CFLAGS}" "${@}"
 }
 
 function run_addspace()
