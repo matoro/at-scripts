@@ -177,3 +177,14 @@ function run_getdefaultflavor()
         *)    echo "${ARCH}-openrc";;
     esac
 }
+
+function run_applypr()
+{
+    [[ -z "${1}" ]] && return
+    run_defsettings
+    run_resetgit ${2:-}
+    run_domounts "latest-stage3-${2:-${DEFAULT_FLAVOR}}"
+    curl -sL "https://github.com/gentoo/gentoo/pull/${1}.patch" | sudo -E git -C "latest-stage3-${2:-${DEFAULT_FLAVOR}}/var/db/repos/gentoo" apply -
+    run_remanifest ${2:-}
+    run_dounmounts "latest-stage3-${2:-${DEFAULT_FLAVOR}}"
+}
