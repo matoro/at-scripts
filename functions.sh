@@ -36,15 +36,18 @@ function run_domounts()
             sudo -E mount --make-rslave "${1}/${f}"
         fi
     done
-    for f in lib/modules usr/src # var/cache/distfiles
-    do
-        [[ -d "${1}/${f}" ]] || sudo -E mkdir -vp "${1}/${f}"
-        [[ -d "${1}/tmp/overlayfs_$(basename "${f}")_workdir" ]] || sudo -E mkdir -vp "${1}/tmp/overlayfs_$(basename "${f}")_workdir"
-        if [[ -e "/${f}" ]] && ! mountpoint -q "${1}/${f}"
-        then
-            sudo -E mount -t overlay overlay -o "lowerdir=/${f},upperdir=${1}/${f},workdir=${1}/tmp/overlayfs_$(basename "${f}")_workdir" "${1}/${f}"
-        fi
-    done
+    if [[ -z "${NOSRC:-}" ]]
+    then
+        for f in lib/modules usr/src # var/cache/distfiles
+        do
+            [[ -d "${1}/${f}" ]] || sudo -E mkdir -vp "${1}/${f}"
+            [[ -d "${1}/tmp/overlayfs_$(basename "${f}")_workdir" ]] || sudo -E mkdir -vp "${1}/tmp/overlayfs_$(basename "${f}")_workdir"
+            if [[ -e "/${f}" ]] && ! mountpoint -q "${1}/${f}"
+            then
+                sudo -E mount -t overlay overlay -o "lowerdir=/${f},upperdir=${1}/${f},workdir=${1}/tmp/overlayfs_$(basename "${f}")_workdir" "${1}/${f}"
+            fi
+        done
+    fi
     [[ -e "${1}/usr/lib/modules" ]] || sudo -E ln -svf "../../lib/modules" "${1}/usr/lib/modules"
 }
 
