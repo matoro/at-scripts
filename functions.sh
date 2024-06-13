@@ -176,7 +176,7 @@ function run_getdefaultflavor()
         riscv)  echo "rv64_lp64d-openrc";;
         s390)   echo "s390x-openrc";;
         sparc)  echo "sparc64-openrc";;
-        x86)    echo "i686-openrc";;
+        x86)    echo "i686-ssemath-openrc";;
         *)    echo "${ARCH}-openrc";;
     esac
 }
