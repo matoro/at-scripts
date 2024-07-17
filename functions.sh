@@ -128,7 +128,7 @@ function run_remanifest()
     run_domounts "latest-stage3-${1:-${DEFAULT_FLAVOR}}"
     (sudo -E git -C "latest-stage3-${1:-${DEFAULT_FLAVOR}}/var/db/repos/gentoo" ls-files --others --exclude-standard && sudo -E git -C "latest-stage3-${1:-${DEFAULT_FLAVOR}}/var/db/repos/gentoo" diff --name-only) | sort -u | grep -E ".*\.ebuild$" | while read line
     do
-        sudo -E chroot "latest-stage3-${1:-${DEFAULT_FLAVOR}}" /bin/bash -c "cd /var/db/repos/gentoo/$(dirname "${line}") && ebuild "$(basename "${line}")" manifest"
+        sudo -E chroot "latest-stage3-${1:-${DEFAULT_FLAVOR}}" /bin/bash -c "cd /var/db/repos/gentoo/$(dirname "${line}") && GENTOO_MIRRORS=\"\" ebuild "$(basename "${line}")" manifest"
     done
     run_dounmounts "latest-stage3-${1:-${DEFAULT_FLAVOR}}"
 }
