@@ -17,8 +17,8 @@ MAKEOPTS="${MAKEOPTS:-"$(portageq envvar MAKEOPTS)"}"
 URLBASE="${GENTOO_MIRROR:-https://gentoo.osuosl.org}/releases/${RELARCH}/autobuilds"
 
 unset GNUPGHOME
-[[ -z "${GPGTMP:-}" ]] || return 0
-GPGTMP="$(mktemp --suffix=.gpg)"
+export GNUPGHOME="$(mktemp -d)"
+GPGTMP="$(mktemp --tmpdir="${GNUPGHOME}" --suffix=.gpg)"
 [[ -e "/usr/share/openpgp-keys/gentoo-release.asc" ]] && gpg --no-default-keyring --keyring "${GPGTMP}" --import "/usr/share/openpgp-keys/gentoo-release.asc" || ( curl -sL "https://qa-reports.gentoo.org/output/service-keys.gpg" | gpg --no-default-keyring --keyring "${GPGTMP}" --import )
 
 function verifycommit()
