@@ -26,7 +26,7 @@ $ # To test under a different stage3 flavor
 $ ../dotest.sh sys-apps/systemd amd64-systemd
 $
 $ # To test on 32-bit
-$ ARCH=x86 ../dotest.sh sys-devel/llvm i686-openrc
+$ ARCH=x86 ../dotest.sh sys-devel/llvm i686-ssemath-openrc
 $ ARCH=arm ../dotest.sh sys-devel/llvm armv7a_hardfp-openrc
 $ ARCH=ppc ../dotest.sh sys-devel/llvm ppc-openrc
 $
