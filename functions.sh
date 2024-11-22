@@ -1,7 +1,7 @@
 function run_dounmounts() 
 {
     [[ -d "${1}" ]] || return
-    ( pgrep dirmngr || true ) | xargs -r -I "%" bash -c '[[ "$(sudo -E realpath "/proc/%/root")" == "$(realpath '"${1}"')" ]] && sudo -E kill "%" || true'
+    ( (pgrep 'dirmngr' ; pgrep 'dbus-daemon' ; pgrep 'redis-server' ; pgrep 'Xvfb') || true ) | xargs -r -I '%' bash -c '[[ $(sudo -E realpath '/proc/%/root' 2>/dev/null) == '$(realpath ''${1}'')' ]] && sudo -E kill '%' || true'
     for f in dev/pts proc dev sys run usr/src lib/modules var/cache/distfiles
     do
         if mountpoint -q "${1}/${f}"
